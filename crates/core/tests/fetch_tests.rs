@@ -15,4 +15,22 @@ async fn fetch_html_success() {
     let body = fetch_html(&url).await.unwrap();
     m.assert();
     assert!(body.contains("hello"));
+}
+
+#[tokio::test]
+async fn fetch_html_http_error() {
+    let server = MockServer::start_async().await;
+    server.mock(|when, then| {
+        when.method(GET).path("/");
+        then.status(404);
+    });
+    let url = server.base_url();
+    let err = fetch_html(&url).await.unwrap_err();
+    assert!(matches!(err, core::FetchError::HttpStatus(404)));
+}
+
+#[tokio::test]
+async fn invalid_scheme() {
+    let err = fetch_html("ftp://example.com").await.unwrap_err();
+    assert!(matches!(err, core::FetchError::UnsupportedScheme(_)));
 } 
