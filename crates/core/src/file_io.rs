@@ -42,7 +42,12 @@ pub async fn validate_js_path<P: AsRef<Path>>(path: P) -> Result<PathBuf, FileAn
     }
 
     // Canonicalize to absolute path (blocking; use tokio::task::spawn_blocking to avoid blocking reactor)
-    let canonical = tokio::task::spawn_blocking(move || std::fs::canonicalize(path_ref))
+    // Spawn a blocking task to canonicalize the path. We must move an owned `PathBuf` into the
+    // closure because the closure may outlive the stack frame, and references would not meet the
+    // `'static` lifetime required by `spawn_blocking`.
+    let path_buf = path_ref.to_path_buf();
+
+    let canonical = tokio::task::spawn_blocking(move || std::fs::canonicalize(path_buf))
         .await
         .map_err(|e| FileAnalysisError::Io(std::io::Error::new(std::io::ErrorKind::Other, e)))??;
 

@@ -1,4 +1,5 @@
 use sourcedumper_core::{local_analysis::analyze_local_js, storage::MemoryStorage};
+use sourcedumper_core::HtmlStorage;
 use tempfile::NamedTempFile;
 use tokio::fs;
 

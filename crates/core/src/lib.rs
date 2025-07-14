@@ -12,4 +12,4 @@ pub mod local_analysis;
 pub use local_analysis::{analyze_local_js, AnalysisError};
 
 pub mod sourcemap;
-pub use sourcemap::extract_sourcemap_urls;
+pub use sourcemap::{extract_sourcemap_urls, validate_sourcemap_urls};
