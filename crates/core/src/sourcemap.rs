@@ -36,4 +36,14 @@ pub fn validate_sourcemap_urls(base: &Url, raw: impl IntoIterator<Item = String>
         }
     }
     out
+}
+
+/// Extract, resolve and deduplicate sourcemap URLs in one convenience call.
+///
+/// This is a thin wrapper around [`extract_sourcemap_urls`] and
+/// [`validate_sourcemap_urls`]. It exists so callers don’t have to chain the
+/// two operations themselves.
+pub fn find_sourcemap_urls(base: &Url, js: &str) -> Vec<Url> {
+    let raw = extract_sourcemap_urls(js);
+    validate_sourcemap_urls(base, raw)
 } 

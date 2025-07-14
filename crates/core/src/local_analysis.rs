@@ -34,3 +34,13 @@ where
         content,
     })
 }
+
+pub async fn analyze_local_js_with_sourcemaps<S>(path: &Path, store: &S) -> Result<(HtmlDocument, Vec<Url>), AnalysisError>
+where
+    S: HtmlStorage,
+{
+    let doc = analyze_local_js(path, store).await?;
+    // Re-use the stored document’s file URL as the base for relative sourcemap resolution.
+    let maps = crate::sourcemap::find_sourcemap_urls(&doc.url, &doc.content);
+    Ok((doc, maps))
+}

@@ -17,7 +17,7 @@
             "description": "Initialize Git repository and configure Rust project core",
             "dependencies": [],
             "details": "Create new Git repository, initialize Rust project using Cargo, configure basic project files (Cargo.toml, .gitignore), and set up Rust toolchain\n<info added on 2025-07-14T17:12:04.632Z>\nImplementation Steps:\n1. Initialize Git repository with `git init` and create .gitignore file containing patterns for Rust, Node.js, and macOS\n2. Create Rust project using `cargo init --bin srcdumper`, then rename package to \"sourcedumper\" in Cargo.toml\n3. Prepare toolchain configuration with `.rust-toolchain.toml` specifying stable version\n4. Add legal documentation templates (MIT License, Code of Conduct)\n5. Perform initial commit with all configuration files using message \"chore: initial project skeleton with Rust core\"\n6. Validate setup by building project with `cargo build` and optionally tag repository as v0.0.1-alpha\n\nKey Considerations:\n- Verify Rust installation via `rustc --version` before proceeding\n- Ensure Cargo.toml path matches workspace structure\n- Include required dependency placeholders for future HTTP/client functionality\n- Confirm .gitignore properly excludes target/ directories and OS-specific files\n</info added on 2025-07-14T17:12:04.632Z>",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -28,7 +28,7 @@
               1
             ],
             "details": "Create directories: src/ for source code, tests/ for test files, docs/ for documentation, and examples/ if needed. Ensure proper permissions and empty .gitkeep files where required\n<info added on 2025-07-14T17:18:41.390Z>\nCreate monorepo directory structure with Rust workspace and PNPM workspaces:\n- Rust workspace structure:\n  • crates/core/ (with src/ and placeholder files)\n  • crates/cli/ (with src/ and placeholder files)\n  • crates/detectors/ (with src/ and placeholder files)\n  • Root Cargo.toml containing workspace members configuration\n- PNPM workspace configuration:\n  • package.json with workspaces: [\"tools/*\"]\n  • pnpm-workspace.yaml listing \"tools/*\"\n  • tools/browser-harness/ with package.json\n- Maintain root-level directories:\n  • tests/\n  • docs/\n- Add .gitkeep files to all empty directories\n- Ensure proper permissions for all created directories\n</info added on 2025-07-14T17:18:41.390Z>",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -39,7 +39,7 @@
               2
             ],
             "details": "Write comprehensive README.md with project overview, setup instructions, and contribution guidelines. Add basic documentation files including LICENSE and CODE_OF_CONDUCT.md",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -54,8 +54,36 @@
         "dependencies": [
           1
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "HTTP client implementation",
+            "description": "Implement async HTML fetching using reqwest library",
+            "dependencies": [],
+            "details": "Create async function using reqwest to fetch HTML content from URLs. Handle redirects and timeouts.\n<info added on 2025-07-14T17:32:32.177Z>\nImplementation Steps:\n1. Add reqwest and tokio dependencies with specified features in core/Cargo.toml\n2. Create fetch_html async function in fetch.rs:\n   - Configure reqwest Client with 30s timeout and desktop User-Agent header\n   - Implement request chain: GET → send → error_for_status → text\n3. Error Handling:\n   - Define FetchError enum covering parsing, network, and scheme errors\n   - Implement From traits for error conversions\n4. Testing:\n   - Create test module with tokio::test and httpmock\n   - Simulate valid/invalid responses (4xx/5xx statuses)\n   - Verify success cases and proper error handling\n5. Module Integration:\n   - Expose fetch module in lib.rs\n   - Re-export public API elements\n6. Future Preparation:\n   - Note storage integration point for HTML content\n   - Plan error type compatibility with storage module\n</info added on 2025-07-14T17:32:32.177Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Error handling & validation",
+            "description": "Handle network errors and validate URL formats",
+            "dependencies": [],
+            "details": "Implement error handling for DNS failures, connection timeouts, and HTTP errors. Add URL syntax validation using regex.\n<info added on 2025-07-14T17:38:04.991Z>\nImplementation Plan:\n1. URL Validation:\n   - Use `url::Url::parse` instead of manual regex validation\n   - Create `validate_url` helper returning Result<Url, FetchError>\n   - Add test cases for invalid schemes and malformed URLs\n\n2. Error Handling:\n   - Extend FetchError enum with:\n     * HttpStatus(u16) for non-2xx responses\n     * Timeout variant using reqwest timeout detection\n   - Map reqwest errors to FetchError variants:\n     * Handle timeouts with is_timeout() check\n     * Capture HTTP status codes\n\n3. Retry Logic:\n   - Implement fetch_with_retries with:\n     * Exponential backoff using tokio::time::sleep\n     * Retries for network/timeout errors\n     * Configurable retry attempts\n\n4. Testing:\n   - Use httpmock to simulate:\n     * HTTP errors (404, 500)\n     * Timeouts with delay()\n   - Verify proper error variants returned\n   - Test retry logic with failure scenarios\n\n5. Documentation:\n   - Add rustdoc comments for public error variants\n   - Document retry behavior and error hierarchy\n</info added on 2025-07-14T17:38:04.991Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Content storage abstraction",
+            "description": "Create storage mechanism for fetched HTML",
+            "dependencies": [],
+            "details": "Design interface to store raw HTML content with metadata (URL, timestamp) for subsequent processing stages.\n<info added on 2025-07-14T17:42:55.390Z>\nImplementation plan for Content storage abstraction:\n1. Dependency additions (core/Cargo.toml):\n   • chrono = \"0.4\" for timestamp metadata\n   • async-trait = \"0.1\" for async trait definitions\n\n2. storage.rs module (crates/core/src/storage.rs):\n   • Define HtmlDocument struct { url: Url, timestamp: DateTime<Utc>, content: String }\n   • Define StorageError enum (currently wraps std::io::Error)\n   • Define async trait HtmlStorage with save_html(url, html) and get(url) methods\n   • Provide MemoryStorage implementation using Tokio RwLock<HashMap<String, HtmlDocument>> - suitable for tests and initial usage\n\n3. Public API exposure in lib.rs: re-export HtmlStorage trait, MemoryStorage, StorageError, HtmlDocument\n\n4. Unit tests (crates/core/tests/storage_tests.rs):\n   • Verify save_html and get round-trip with MemoryStorage\n\n5. Future extension notes:\n   • Add FileSystemStorage writing files to disk with SHA-256 naming\n   • Consider SQLite or sled backing store for large crawls\n\nCompletion criteria: Code compiles and tests pass\n</info added on 2025-07-14T17:42:55.390Z>",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 3,
@@ -68,7 +96,39 @@
           1
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "File Path Validation & Error Handling",
+            "description": "Validate the provided file path exists, points to a valid JavaScript file, and handle file not found/invalid path errors",
+            "dependencies": [],
+            "details": "Implement checks for file existence, extension validation, and filesystem access permissions. Throw structured errors for invalid paths/missing files.\n<info added on 2025-07-14T17:57:55.840Z>\nImplementation Details:\n- Enable Tokio's `fs` feature in Cargo.toml and utilize `thiserror` for error handling\n- Create `FileAnalysisError` enum with NotFound, InvalidExtension, PermissionDenied, and Io variants\n- Implement From<std::io::Error> conversion handling permission denials\n- Develop async validate_js_path function performing:\n  • File existence check via tokio::fs::metadata\n  • File type verification (is_file())\n  • .js extension validation\n  • Path canonicalization\n- Write unit tests using tempfile crate to verify:\n  • Valid JS file acceptance\n  • Proper error returns for missing files/wrong extensions\n- Integration-ready design with error propagation for subsequent file operations\n\nCompletion Criteria:\n- Functional file_io.rs module compiling without errors\n- Passing unit tests covering all validation scenarios\n- Proper error type integration with parent error enum\n- Successful path validation handoff to file reading operations\n</info added on 2025-07-14T17:57:55.840Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Secure File Reading & Buffering",
+            "description": "Read file contents with proper error handling for permission issues and system I/O errors",
+            "dependencies": [
+              1
+            ],
+            "details": "Use filesystem module to read file contents into buffer. Handle EACCES permissions errors and implement retry logic for busy files.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Content Parsing & Storage Integration",
+            "description": "Parse JavaScript content and store results using the storage module",
+            "dependencies": [
+              2
+            ],
+            "details": "Validate file content as valid JavaScript. Implement structured storage through the defined storage module interface for processed results.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 4,
@@ -82,7 +142,40 @@
           3
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Sourcemap regex detection",
+            "description": "Implement regex pattern to detect sourceMappingURL comments in JavaScript content",
+            "dependencies": [],
+            "details": "Create regular expression to scan JavaScript files for sourcemap declaration comments. Extract raw URLs from matches while handling different comment syntax variations.\n<info added on 2025-07-14T18:04:44.646Z>\nImplementation Steps:\n1. Add regex dependency to core/Cargo.toml: `regex = \"1\"`\n2. Create core/src/sourcemap.rs with:\n   - Lazy static SOURCE_MAP_RE using pattern: `(?m)//[#@]\\s*sourceMappingURL=([^\\s]+)|/\\*#\\s*sourceMappingURL=([^*]+)\\*/`\n   - Public extract_sourcemap_urls function that:\n     * Iterates regex captures\n     * Extracts non-empty groups 1 and 2\n     * Returns trimmed URLs in vector\n3. Unit tests covering:\n   - Single-line comment: //# sourceMappingURL=app.js.map\n   - Block comment: /*# sourceMappingURL=vendor.map */\n   - Files with multiple declarations\n   - Files without any sourcemap\n4. Validation and deduplication deferred to subtask 4.2\n</info added on 2025-07-14T18:04:44.646Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "URL validation + de-duplication",
+            "description": "Validate extracted URLs and remove duplicates",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement validation logic for extracted URLs including syntax checks and path normalization. Add deduplication to handle multiple identical URLs from different comment formats.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Pipeline integration (return list)",
+            "description": "Integrate detection and validation into processing pipeline",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Connect regex detection and validation components to main workflow. Return cleaned list of URLs or empty result. Implement graceful exit when no valid sourcemaps are found.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 5,
@@ -102,7 +195,7 @@
             "description": "Analyze Webpack runtime file structure to identify key patterns and sections containing chunk mappings",
             "dependencies": [],
             "details": "Reverse-engineer Webpack runtime file format. Identify common structures, entry points, and mapping storage patterns through static analysis.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -113,7 +206,7 @@
               1
             ],
             "details": "Implement parsing algorithms to extract mapping relationships between chunk IDs and their corresponding URLs from identified code patterns.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -124,7 +217,7 @@
               2
             ],
             "details": "Account for variations like different Webpack versions, custom output formats, and optimization flags that alter mapping storage patterns.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -135,7 +228,7 @@
               3
             ],
             "details": "Create verification checks through runtime execution simulation and network request pattern matching to validate extracted mappings.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -158,7 +251,7 @@
             "description": "Parse sourcemap files to extract mappings, sources, and names arrays",
             "dependencies": [],
             "details": "Implement parser to read sourcemap v3 format, decode base64 VLQ mappings, and extract original file references",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -169,7 +262,7 @@
               1
             ],
             "details": "Resolve relative paths using sourceRoot/sources fields, handle webpack:// prefixes, and reconstruct directory structure",
-            "status": "pending",
+            "status": "in-progress",
             "testStrategy": ""
           },
           {
@@ -477,7 +570,7 @@
     ],
     "metadata": {
       "created": "2025-07-14T16:56:51.001Z",
-      "updated": "2025-07-14T17:11:06.247Z",
+      "updated": "2025-07-14T18:30:36.740Z",
       "description": "Tasks for master context"
     }
   }
