@@ -25,18 +25,6 @@ pub fn sources_list(sm: &SourceMap) -> Vec<String> {
         .collect()
 }
 
-/// Find a span in the module whose starting position matches the mapping line/col.
-fn find_span_in_module(cm: &SwcSourceMap, module: &Module, line: usize, col: usize) -> Option<Span> {
-    for item in &module.body {
-        let span = item.span();
-        let loc = cm.lookup_char_pos(span.lo());
-        if loc.line == line + 1 && loc.col_display == col {
-            return Some(span);
-        }
-    }
-    None
-}
-
 /// Reconstruct original sources from a sourcemap and generated JS.
 pub fn reconstruct_sources_with_swc(sm: &SourceMap, generated_js: &str) -> Result<(), SourcemapError> {
     // 1. Try to use sourcesContent if present
@@ -80,6 +68,20 @@ pub fn reconstruct_sources_with_swc(sm: &SourceMap, generated_js: &str) -> Resul
         }
     }
 
+    // Helper: build a lookup map from (line_zero_based, col) -> Span for fast retrieval
+    fn build_span_map(cm: &SwcSourceMap, module: &Module) -> HashMap<(usize, usize), Span> {
+        let mut map = HashMap::new();
+        for item in &module.body {
+            let span = item.span();
+            let loc = cm.lookup_char_pos(span.lo());
+            // loc.line is 1-based; convert to 0-based to match token lines
+            map.insert((loc.line - 1, loc.col_display), span);
+        }
+        map
+    }
+
+    let span_map = build_span_map(&cm, &module);
+
     // 3. Iterate over all mappings and collect segments for each original source
     let mut source_segments: HashMap<String, Vec<String>> = HashMap::new();
     let fm = cm.lookup_char_pos(module.span().lo()).file;
@@ -88,12 +90,10 @@ pub fn reconstruct_sources_with_swc(sm: &SourceMap, generated_js: &str) -> Resul
         let src_path = sm.get_source(src_idx).unwrap_or("").to_string();
         let gen_line = token.get_dst_line() as usize;
         let gen_col = token.get_dst_col() as usize;
-        // Attempt to find a span starting exactly at (gen_line, gen_col)
-        let found = find_span_in_module(&cm, &module, gen_line, gen_col);
-        let segment = if let Some(span) = found {
+        let segment = if let Some(&span) = span_map.get(&(gen_line, gen_col)) {
             extract_segment(&cm, &fm, span).unwrap_or_else(|| "[unextractable segment]".to_string())
         } else {
-            println!("Warning: No AST node found for {}:{} in {}", gen_line, gen_col, src_path);
+            println!("Warning: No span found for {}:{} in {}", gen_line, gen_col, src_path);
             format!("[segment for {}:{} in {}]", gen_line, gen_col, src_path)
         };
         source_segments.entry(src_path).or_default().push(segment);
