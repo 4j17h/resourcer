@@ -66,4 +66,15 @@ async fn validate_urls() {
     assert_eq!(res, vec![ok_url]);
 
     ok_mock.assert_async().await;
+}
+
+#[test]
+fn swc_parse_runtime_prints_ast() {
+    let js = r#"
+    __webpack_require__.u = function(chunkId) {
+        return "static/js/" + chunkId + ".js";
+    };
+    var foo = 42;
+    "#;
+    sourcedumper_core::swc_print_top_level(js);
 } 

@@ -3,6 +3,8 @@ use regex::Regex;
 use url::Url;
 use reqwest::Client;
 use futures::stream::{FuturesUnordered, StreamExt};
+use swc_ecma_parser::{Parser, StringInput, Syntax};
+use swc_common::{sync::Lrc, SourceMap, FileName};
 
 /// Represents the discovered pattern that Webpack uses to construct chunk URLs.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -89,4 +91,23 @@ pub async fn validate_chunk_urls(urls: impl IntoIterator<Item = Url>) -> Vec<Url
         if let Some(u) = res { good.push(u) }
     }
     good
+}
+
+/// Parse the JS source using SWC and print top-level module items (for dev/testing)
+pub fn swc_print_top_level(js: &str) {
+    let cm: Lrc<SourceMap> = Default::default();
+    let js_owned = js.to_owned();
+    let fm = cm.new_source_file(FileName::Custom("runtime.js".into()).into(), js_owned);
+    let mut parser = Parser::new(Syntax::Es(Default::default()), StringInput::from(&*fm), None);
+    match parser.parse_module() {
+        Ok(module) => {
+            println!("SWC parsed module with {} top-level items", module.body.len());
+            for item in &module.body {
+                println!("  - {:?}", item);
+            }
+        }
+        Err(e) => {
+            println!("SWC parse error: {:?}", e);
+        }
+    }
 } 
