@@ -22,3 +22,6 @@ pub use sm_parse::{parse_sourcemap, SourcemapError, sources_list};
 
 pub mod path_reconstruct;
 pub use path_reconstruct::reconstruct_paths;
+
+pub mod download_manager;
+pub use download_manager::{download_many, DownloadManagerConfig, DownloadResult};
