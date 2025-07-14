@@ -1,0 +1,484 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Project Repository",
+        "description": "Initialize the project repository with the necessary structure and files.",
+        "details": "Create a new Git repository. Initialize the project with a Rust core for performance. Set up the directory structure for source code, tests, and documentation. Include a README file with basic project information and setup instructions.",
+        "testStrategy": "Verify the repository structure and initial commit. Ensure all necessary files and directories are present.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Git initialization and Rust core configuration",
+            "description": "Initialize Git repository and configure Rust project core",
+            "dependencies": [],
+            "details": "Create new Git repository, initialize Rust project using Cargo, configure basic project files (Cargo.toml, .gitignore), and set up Rust toolchain\n<info added on 2025-07-14T17:12:04.632Z>\nImplementation Steps:\n1. Initialize Git repository with `git init` and create .gitignore file containing patterns for Rust, Node.js, and macOS\n2. Create Rust project using `cargo init --bin srcdumper`, then rename package to \"sourcedumper\" in Cargo.toml\n3. Prepare toolchain configuration with `.rust-toolchain.toml` specifying stable version\n4. Add legal documentation templates (MIT License, Code of Conduct)\n5. Perform initial commit with all configuration files using message \"chore: initial project skeleton with Rust core\"\n6. Validate setup by building project with `cargo build` and optionally tag repository as v0.0.1-alpha\n\nKey Considerations:\n- Verify Rust installation via `rustc --version` before proceeding\n- Ensure Cargo.toml path matches workspace structure\n- Include required dependency placeholders for future HTTP/client functionality\n- Confirm .gitignore properly excludes target/ directories and OS-specific files\n</info added on 2025-07-14T17:12:04.632Z>",
+            "status": "in-progress",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Directory structure creation",
+            "description": "Create required project directory structure",
+            "dependencies": [
+              1
+            ],
+            "details": "Create directories: src/ for source code, tests/ for test files, docs/ for documentation, and examples/ if needed. Ensure proper permissions and empty .gitkeep files where required\n<info added on 2025-07-14T17:18:41.390Z>\nCreate monorepo directory structure with Rust workspace and PNPM workspaces:\n- Rust workspace structure:\n  • crates/core/ (with src/ and placeholder files)\n  • crates/cli/ (with src/ and placeholder files)\n  • crates/detectors/ (with src/ and placeholder files)\n  • Root Cargo.toml containing workspace members configuration\n- PNPM workspace configuration:\n  • package.json with workspaces: [\"tools/*\"]\n  • pnpm-workspace.yaml listing \"tools/*\"\n  • tools/browser-harness/ with package.json\n- Maintain root-level directories:\n  • tests/\n  • docs/\n- Add .gitkeep files to all empty directories\n- Ensure proper permissions for all created directories\n</info added on 2025-07-14T17:18:41.390Z>",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Documentation and README population",
+            "description": "Create initial documentation and populate README",
+            "dependencies": [
+              2
+            ],
+            "details": "Write comprehensive README.md with project overview, setup instructions, and contribution guidelines. Add basic documentation files including LICENSE and CODE_OF_CONDUCT.md",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement URL Fetching",
+        "description": "Develop the functionality to fetch HTML content from a given URL.",
+        "details": "Use a reliable HTTP client library (e.g., reqwest in Rust) to fetch the HTML content from the provided URL. Handle potential errors such as network issues or invalid URLs. Ensure the fetched content is stored for further processing.",
+        "testStrategy": "Test with various URLs, including valid and invalid cases. Verify the fetched content matches the expected HTML.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Implement Local File Analysis",
+        "description": "Develop the functionality to analyze a local JavaScript file.",
+        "details": "Read the local JavaScript file and parse its content. Ensure the file path is valid and handle potential errors such as file not found or permission issues. Store the content for further processing.",
+        "testStrategy": "Test with various local JavaScript files, including valid and invalid cases. Verify the parsed content matches the expected JavaScript code.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Automatic Sourcemap Detection",
+        "description": "Develop the functionality to automatically detect sourcemap URLs in JavaScript content.",
+        "details": "Scan the JavaScript content for `sourceMappingURL` comments. Extract the URLs and verify their validity. If no sourcemaps are found, exit gracefully.",
+        "testStrategy": "Test with JavaScript files containing sourcemap URLs and those without. Verify the detected URLs are correct and handle cases with no sourcemaps.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement Webpack Runtime Parsing",
+        "description": "Develop the functionality to parse Webpack runtime files and discover chunk-to-URL mappings.",
+        "details": "Parse the Webpack runtime file to extract the mapping between chunks and their corresponding URLs. Handle different Webpack configurations and ensure the mappings are accurate.",
+        "testStrategy": "Test with various Webpack runtime files. Verify the extracted mappings are correct and handle different Webpack configurations.",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Runtime file structure analysis",
+            "description": "Analyze Webpack runtime file structure to identify key patterns and sections containing chunk mappings",
+            "dependencies": [],
+            "details": "Reverse-engineer Webpack runtime file format. Identify common structures, entry points, and mapping storage patterns through static analysis.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Chunk mapping extraction",
+            "description": "Develop logic to extract chunk-to-URL mappings from analyzed runtime structure",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement parsing algorithms to extract mapping relationships between chunk IDs and their corresponding URLs from identified code patterns.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Webpack config variations",
+            "description": "Handle different Webpack configuration scenarios affecting runtime structure",
+            "dependencies": [
+              2
+            ],
+            "details": "Account for variations like different Webpack versions, custom output formats, and optimization flags that alter mapping storage patterns.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Mapping validation",
+            "description": "Implement validation mechanisms to ensure mapping accuracy",
+            "dependencies": [
+              3
+            ],
+            "details": "Create verification checks through runtime execution simulation and network request pattern matching to validate extracted mappings.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Implement Source Code Reconstruction",
+        "description": "Develop the functionality to reconstruct the original source code from sourcemap files.",
+        "details": "Parse the sourcemap files (`.map`) to reconstruct the original file paths and content. Ensure the reconstructed source code matches the original structure and content.",
+        "testStrategy": "Test with various sourcemap files. Verify the reconstructed source code matches the expected original code.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Sourcemap Parsing",
+            "description": "Parse sourcemap files to extract mappings, sources, and names arrays",
+            "dependencies": [],
+            "details": "Implement parser to read sourcemap v3 format, decode base64 VLQ mappings, and extract original file references",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Path Reconstruction",
+            "description": "Rebuild original file paths from parsed sourcemap data",
+            "dependencies": [
+              1
+            ],
+            "details": "Resolve relative paths using sourceRoot/sources fields, handle webpack:// prefixes, and reconstruct directory structure",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Content Reassembly",
+            "description": "Reconstruct original source content from mapped segments",
+            "dependencies": [
+              2
+            ],
+            "details": "Combine source fragments using mappings offsets, apply names array substitutions, and reassemble complete files",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Validation Against Originals",
+            "description": "Verify reconstructed code matches original source files",
+            "dependencies": [
+              3
+            ],
+            "details": "Compare checksums/hashes of reconstructed files with available originals, implement diff analysis for validation",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Local File Output",
+        "description": "Develop the functionality to save the reconstructed source tree to a user-specified output directory.",
+        "details": "Create the output directory if it does not exist. Save the reconstructed source files in the specified directory, mirroring the original project structure. Handle potential errors such as permission issues or invalid directory paths.",
+        "testStrategy": "Test with various output directories. Verify the saved source files match the expected structure and content.",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement List Discovered URLs Feature",
+        "description": "Develop the functionality to list all discoverable JavaScript chunk URLs without downloading them.",
+        "details": "Add a flag (`--list-urls`) to the CLI interface. Implement the logic to output the list of discovered URLs without performing any downloads or extractions.",
+        "testStrategy": "Test with various URLs. Verify the listed URLs match the expected discoverable JavaScript chunks.",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement Dynamic Site Analysis (Browser Mode)",
+        "description": "Develop the functionality to handle Single-Page Applications (SPAs) with dynamically injected script tags.",
+        "details": "Add a flag (`--browser`) to the CLI interface. Use a headless browser (Playwright) to ensure all scripts are loaded and analyzed. Handle dynamic content loading and ensure all script tags are detected.",
+        "testStrategy": "Test with various SPAs. Verify all dynamically injected script tags are detected and analyzed.",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Headless browser integration",
+            "description": "Integrate Playwright headless browser to ensure script loading and analysis",
+            "dependencies": [],
+            "details": "Add `--browser` CLI flag and configure Playwright for SPA analysis. Establish browser instance management and lifecycle control.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Dynamic content detection",
+            "description": "Implement detection mechanism for dynamically injected script tags in SPAs",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop DOM monitoring system with MutationObserver. Create detection logic for script tag injections during runtime navigation and content updates.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Script loading verification",
+            "description": "Verify complete loading and analysis of all scripts including dynamic ones",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement network request interception and loading state validation. Add retry logic for asynchronous script execution with configurable timeout thresholds.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement First-Run Consent",
+        "description": "Develop the functionality to present a disclaimer and terms of service on the first run.",
+        "details": "Display a disclaimer and terms of service on the first run. Require user acceptance before proceeding with the tool's operation. Store the acceptance status to avoid repeating the consent process.",
+        "testStrategy": "Test the first-run experience. Verify the disclaimer and terms of service are displayed and user acceptance is required.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Dry Run Mode",
+        "description": "Develop the functionality to perform a dry run that detects and analyzes without downloading files.",
+        "details": "Add a flag (`--dry-run`) to the CLI interface. Implement the logic to perform detection and analysis without downloading any files. Output the results of the dry run.",
+        "testStrategy": "Test with various URLs. Verify the dry run performs detection and analysis without downloading files and outputs the expected results.",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement Resource Limiting",
+        "description": "Develop the functionality to set limits on the maximum number of files to download and total download size.",
+        "details": "Add flags (`--max-files` and `--max-bytes`) to the CLI interface. Implement the logic to enforce the specified limits during the download process. Handle cases where the limits are exceeded and provide appropriate feedback to the user.",
+        "testStrategy": "Test with various limits. Verify the tool enforces the specified limits and provides appropriate feedback when the limits are exceeded.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement Performance Optimization",
+        "description": "Optimize the core extraction process for performance.",
+        "details": "Use concurrent downloads to maximize network throughput. Optimize the parsing and reconstruction algorithms for speed. Ensure the tool is significantly faster than manual methods.",
+        "testStrategy": "Test the performance of the tool with various URLs and file sizes. Verify the tool is significantly faster than manual methods and handles concurrent downloads efficiently.",
+        "priority": "high",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Concurrent download system",
+            "description": "Implement concurrent downloads to maximize network throughput",
+            "dependencies": [],
+            "details": "Develop a system using concurrency patterns (e.g., worker pools, goroutines) to parallelize file downloads. Handle connection pooling, error handling across simultaneous requests, and resource allocation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Algorithm optimization",
+            "description": "Optimize parsing and reconstruction algorithms for speed",
+            "dependencies": [],
+            "details": "Profile existing algorithms to identify bottlenecks. Implement optimizations such as memory pooling, stream processing, and efficient data structures. Validate output integrity after optimizations.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Benchmark comparisons",
+            "description": "Establish performance benchmarks against manual methods",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create test harness for measuring throughput, latency, and resource usage. Compare optimized version against baseline metrics and manual processes. Document results for different file sizes and network conditions.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Implement Cross-Platform Support",
+        "description": "Ensure the CLI tool is distributable as a pre-compiled binary for major platforms.",
+        "details": "Compile the tool for macOS, Windows, and Linux. Ensure the binaries are distributable and avoid complex installation steps for end-users. Test the binaries on each platform to ensure they work correctly.",
+        "testStrategy": "Test the binaries on macOS, Windows, and Linux. Verify the tool works correctly on each platform and the installation process is straightforward.",
+        "priority": "high",
+        "dependencies": [
+          13
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Implement Extensibility for New Runtime Detectors",
+        "description": "Ensure the architecture allows for new runtime detectors to be added as plugins.",
+        "details": "Design the architecture to support plugins for new runtime detectors (e.g., Vite, Parcel). Ensure the core engine can be extended without alterations. Provide documentation and examples for adding new plugins.",
+        "testStrategy": "Test the extensibility of the tool by adding new runtime detectors. Verify the core engine works correctly with the new plugins and the architecture is flexible.",
+        "priority": "medium",
+        "dependencies": [
+          14
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Plugin Architecture Design",
+            "description": "Design the plugin system architecture to support adding new runtime detectors without core engine modifications. Establish interfaces, registration mechanisms, and lifecycle management.",
+            "dependencies": [],
+            "details": "Define base interfaces for plugins, create registration system, implement dependency management, ensure backward compatibility",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Extension Points Definition",
+            "description": "Identify and document specific extension points in the core engine where new runtime detectors can integrate. Create contracts for detector registration and result reporting.",
+            "dependencies": [
+              1
+            ],
+            "details": "Map integration points in execution pipeline, define detector registration API, specify data formats for compatibility",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Documentation Examples",
+            "description": "Develop comprehensive documentation with implementation examples for plugin developers. Include sample detector plugins and integration tutorials.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create API reference, write step-by-step guide, provide sample Vite/Parcel detector implementations, include troubleshooting section",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "Implement Evasion Techniques",
+        "description": "Ensure all outbound network requests use a default User-Agent string that mimics a modern web browser.",
+        "details": "Set the default User-Agent string for all outbound network requests to mimic a modern web browser. Ensure the requests avoid trivial bot-detection filters.",
+        "testStrategy": "Test the network requests with various websites. Verify the User-Agent string mimics a modern web browser and the requests are not blocked by bot-detection filters.",
+        "priority": "medium",
+        "dependencies": [
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Implement CLI Interface",
+        "description": "Develop the CLI interface with clear commands and sensible defaults.",
+        "details": "Design the CLI interface with intuitive commands and sensible defaults. Ensure the interface is user-friendly and provides clear feedback. Implement help and usage instructions.",
+        "testStrategy": "Test the CLI interface with various commands and options. Verify the interface is user-friendly, provides clear feedback, and the help instructions are accurate.",
+        "priority": "high",
+        "dependencies": [
+          16
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Implement Documentation and User Guides",
+        "description": "Create comprehensive documentation and user guides for the tool.",
+        "details": "Write detailed documentation covering the tool's features, usage, and configuration. Include user guides, examples, and troubleshooting tips. Ensure the documentation is clear and accessible.",
+        "testStrategy": "Review the documentation for completeness and accuracy. Verify the user guides and examples are clear and the troubleshooting tips are helpful.",
+        "priority": "medium",
+        "dependencies": [
+          17
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Conduct User Acceptance Testing",
+        "description": "Perform user acceptance testing with the target audience.",
+        "details": "Conduct testing with security auditors, developers, and reverse engineers. Gather feedback on the tool's usability, performance, and accuracy. Make necessary adjustments based on the feedback.",
+        "testStrategy": "Collect feedback from the target audience. Verify the tool meets their expectations and make necessary improvements.",
+        "priority": "high",
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Prepare for Release",
+        "description": "Prepare the tool for release, including final testing and packaging.",
+        "details": "Perform final testing to ensure the tool is stable and bug-free. Package the tool for distribution, including binaries for major platforms. Prepare release notes and marketing materials.",
+        "testStrategy": "Conduct final testing to verify the tool is stable and bug-free. Review the packaging and release notes for accuracy and completeness.",
+        "priority": "high",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-14T16:56:51.001Z",
+      "updated": "2025-07-14T17:11:06.247Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

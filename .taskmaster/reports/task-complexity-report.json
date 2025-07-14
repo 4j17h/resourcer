@@ -1,0 +1,173 @@
+{
+	"meta": {
+		"generatedAt": "2025-07-14T17:03:53.734Z",
+		"tasksAnalyzed": 20,
+		"totalTasks": 20,
+		"analysisCount": 20,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": false
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Setup Project Repository",
+			"complexityScore": 3,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down repository setup into: 1) Git initialization and Rust core configuration 2) Directory structure creation 3) Documentation and README population",
+			"reasoning": "Standard project setup with multiple structural components but no complex logic required"
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Implement URL Fetching",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Divide into: 1) HTTP client implementation 2) Error handling for network issues 3) Content storage mechanism",
+			"reasoning": "Requires integration with external libraries and comprehensive error handling"
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Implement Local File Analysis",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Split into: 1) File path validation 2) File content parsing 3) Permission handling",
+			"reasoning": "File system operations require multiple validation layers but follow predictable patterns"
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Implement Automatic Sourcemap Detection",
+			"complexityScore": 7,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Separate: 1) Sourcemap comment scanning 2) URL validation logic 3) Graceful exit handling",
+			"reasoning": "Pattern matching and URL validation add complexity to content analysis"
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Implement Webpack Runtime Parsing",
+			"complexityScore": 8,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break into: 1) Runtime file structure analysis 2) Chunk mapping extraction 3) Webpack config variations 4) Mapping validation",
+			"reasoning": "High complexity due to Webpack configuration variability and mapping accuracy requirements"
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Implement Source Code Reconstruction",
+			"complexityScore": 9,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Divide into: 1) Sourcemap parsing 2) Path reconstruction 3) Content reassembly 4) Validation against originals",
+			"reasoning": "Complex mapping logic and potential for large-scale code reconstruction"
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Implement Local File Output",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Split into: 1) Directory creation logic 2) File structure mirroring 3) Permission error handling",
+			"reasoning": "File system operations with potential cross-platform issues"
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Implement List Discovered URLs Feature",
+			"complexityScore": 4,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "Separate: 1) CLI flag implementation 2) URL collection without download logic",
+			"reasoning": "Relatively straightforward feature extension"
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Implement Dynamic Site Analysis (Browser Mode)",
+			"complexityScore": 8,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break into: 1) Headless browser integration 2) Dynamic content detection 3) Script loading verification",
+			"reasoning": "Complex browser automation and dynamic content handling"
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Implement First-Run Consent",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Divide into: 1) UI presentation 2) Acceptance storage 3) Conditional workflow control",
+			"reasoning": "Requires user interaction and state management"
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Implement Dry Run Mode",
+			"complexityScore": 5,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "Split into: 1) Detection logic without IO 2) Analysis result formatting",
+			"reasoning": "Moderate complexity due to conditional execution paths"
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Implement Resource Limiting",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Separate: 1) Limit flag implementation 2) Download tracking 3) User feedback system",
+			"reasoning": "Requires state tracking across download operations"
+		},
+		{
+			"taskId": 13,
+			"taskTitle": "Implement Performance Optimization",
+			"complexityScore": 9,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break into: 1) Concurrent download system 2) Algorithm optimization 3) Benchmark comparisons",
+			"reasoning": "High complexity due to concurrency and algorithmic challenges"
+		},
+		{
+			"taskId": 14,
+			"taskTitle": "Implement Cross-Platform Support",
+			"complexityScore": 7,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Divide into: 1) Platform-specific compilation 2) Binary testing 3) Distribution packaging",
+			"reasoning": "Multiple target environments require thorough testing"
+		},
+		{
+			"taskId": 15,
+			"taskTitle": "Implement Extensibility for New Runtime Detectors",
+			"complexityScore": 8,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Split into: 1) Plugin architecture design 2) Extension points definition 3) Documentation examples",
+			"reasoning": "Architectural complexity for plugin system"
+		},
+		{
+			"taskId": 16,
+			"taskTitle": "Implement Evasion Techniques",
+			"complexityScore": 4,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "Separate: 1) User-Agent configuration 2) Request header validation",
+			"reasoning": "Straightforward header modification with testing requirements"
+		},
+		{
+			"taskId": 17,
+			"taskTitle": "Implement CLI Interface",
+			"complexityScore": 7,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break into: 1) Command structure design 2) Help system implementation 3) Input validation",
+			"reasoning": "User interaction design with multiple edge cases"
+		},
+		{
+			"taskId": 18,
+			"taskTitle": "Implement Documentation and User Guides",
+			"complexityScore": 3,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Divide into: 1) Feature documentation 2) Usage examples 3) Troubleshooting guide",
+			"reasoning": "Standard documentation effort with organizational challenges"
+		},
+		{
+			"taskId": 19,
+			"taskTitle": "Conduct User Acceptance Testing",
+			"complexityScore": 6,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Split into: 1) Test plan creation 2) Feedback collection 3) Iterative improvements",
+			"reasoning": "Requires coordination with multiple stakeholders"
+		},
+		{
+			"taskId": 20,
+			"taskTitle": "Prepare for Release",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Separate: 1) Final regression testing 2) Packaging for platforms 3) Release notes preparation",
+			"reasoning": "Coordinated release process with multiple deliverables"
+		}
+	]
+}

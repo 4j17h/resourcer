@@ -1,0 +1,60 @@
+# Product Requirements Document: SourceDumper
+
+## 1. Introduction
+
+### 1.1 Problem Statement
+Developers, security auditors, and reverse engineers often need to inspect the original source code of a web application for debugging, analysis, or security auditing. However, modern web apps are typically deployed as bundled, minified, and transpiled JavaScript. Manually finding and reconstructing the original code from sourcemaps is a tedious, error-prone, and slow process that requires browser developer tools and significant manual effort. There is no streamlined, high-performance CLI tool that can reliably automate this process from a single URL.
+
+### 1.2 Vision
+**SourceDumper** will be a best-in-class, performance-oriented CLI tool that automates the discovery and reconstruction of a web application's original source code from its sourcemaps. It will empower users to go from a URL to a complete, locally-saved source tree in seconds, enabling deep analysis, security auditing, and debugging workflows that are currently impractical.
+
+## 2. Goals & Objectives
+
+*   **Become the fastest tool for source code reconstruction:** Achieve near-native performance by offloading CPU- and I/O-intensive tasks to a Rust core.
+*   **Ensure high-precision analysis:** Only extract code if a valid sourcemap is unambiguously detected. Never guess or produce partial, unreliable results.
+*   **Provide a seamless user experience:** Offer a simple, intuitive CLI interface with clear commands and sensible defaults.
+*   **Promote ethical use:** Build in safeguards and user consent mechanisms to discourage misuse and ensure users operate within legal boundaries.
+
+## 3. Target Audience
+
+*   **Security Auditors & Penetration Testers:** Need to quickly obtain the source code of a target application to perform static analysis and identify vulnerabilities.
+*   **Frontend Developers:** Need to debug production issues by inspecting the original, un-minified code of their own or third-party applications.
+*   **Reverse Engineers & Tech Enthusiasts:** Want to understand how complex web applications are built by studying their original architecture.
+
+## 4. Features & Requirements
+
+### 4.1 Core Functionality
+*   **FR1: Analyze from URL:** The user MUST be able to provide a URL as the primary input. The tool will fetch the HTML, find all script tags, and begin its analysis.
+*   **FR2: Analyze from Local File:** The user MUST be able to provide a path to a local JavaScript file (e.g., a webpack runtime) to analyze.
+*   **FR3: Automatic Sourcemap Detection:** The tool MUST automatically scan JavaScript content to find `sourceMappingURL` comments. If none are found in the entry point scripts, it should exit gracefully.
+*   **FR4: Webpack Runtime Parsing:** The tool MUST be able to parse standard Webpack runtime files to discover the chunk-to-URL mapping.
+*   **FR5: Source Code Reconstruction:** The tool MUST parse sourcemap files (`.map`) to reconstruct the original file paths and content.
+*   **FR6: Local File Output:** The reconstructed source tree MUST be saved to a user-specified output directory, mirroring the original project structure.
+
+### 4.2 Advanced Features
+*   **FR7: List Discovered URLs:** The user MUST be able to pass a flag (`--list-urls`) that outputs the list of all discoverable JavaScript chunk URLs without downloading or extracting them.
+*   **FR8: Dynamic Site Analysis (Browser Mode):** The user SHOULD be able to use a flag (`--browser`) to handle Single-Page Applications (SPAs) where script tags are injected dynamically. This will invoke a headless browser (Playwright) to ensure all scripts are loaded.
+
+### 4.3 Safety & Ethical Features
+*   **FR10: First-Run Consent:** The tool MUST present a disclaimer and terms of service on the first run. The user must accept these terms before the tool will operate.
+*   **FR11: Dry Run Mode:** The user MUST be able to perform a "dry run" (`--dry-run`) that performs detection and analysis but does not download any files.
+*   **FR12: Resource Limiting:** The user SHOULD be able to set limits on the maximum number of files to download (`--max-files`) and total download size (`--max-bytes`) to prevent accidental resource abuse.
+
+### 4.4 Non-Functional Requirements
+*   **NFR1: Performance:** The core extraction process should be significantly faster than manual methods. Concurrent downloads should be used to maximize network throughput.
+*   **NFR2: Cross-Platform Support:** The CLI tool MUST be distributable as a pre-compiled binary for major platforms (macOS, Windows, Linux) to avoid complex installation steps for end-users.
+*   **NFR3: Extensibility:** The architecture SHOULD allow for new "runtime detectors" (e.g., for Vite, Parcel) to be added in the future as plugins, without altering the core engine.
+*   **NFR4: Evasion:** All outbound network requests MUST use a default User-Agent string that mimics a modern web browser to avoid trivial bot-detection filters.
+
+## 5. User Stories
+
+*   **As a security auditor, I want to** provide a URL and get the full source code in a local folder **so that I can** immediately start running static analysis tools on it.
+*   **As a developer, I want to** list all the JS chunks a page loads **so that I can** debug bundle size issues without opening my browser's dev tools.
+*   **As a reverse engineer, I want to** run the tool on a dynamic, complex web app **so that I can** get the source code even if the script tags are not in the initial HTML.
+*   **As a new user, I want to** see a clear warning about ethical use **so that I** understand the tool's intended purpose and operate responsibly.
+
+## 6. Out of Scope
+
+*   **Decompiling WebAssembly:** This tool will only handle JavaScript and its sourcemaps. It will not decompile `.wasm` files.
+*   **Cracking or Bypassing Authentication:** The tool will only analyze publicly accessible code or code that the user is authenticated to view. It will not include features for bypassing logins.
+*   **General-Purpose Web Scraper:** SourceDumper is not a crawler. It will only analyze the scripts found on the single URL provided. 
