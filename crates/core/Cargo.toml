@@ -17,6 +17,8 @@ sourcemap = "9"
 swc_ecma_parser = "20.0.0"
 swc_common = "14.0.0"
 swc_ecma_ast = "14.0.0"
+walkdir = "2"
+sha2 = "0.10"
 
 [dev-dependencies]
 httpmock = "0.7"

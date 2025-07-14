@@ -27,4 +27,4 @@ pub mod download_manager;
 pub use download_manager::{download_many, DownloadManagerConfig, DownloadResult};
 
 pub mod output;
-pub use output::ensure_output_dir;
+pub use output::{ensure_output_dir, mirror_structure, copy_files, validate_output};
