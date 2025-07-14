@@ -47,4 +47,17 @@ pub async fn validate_js_path<P: AsRef<Path>>(path: P) -> Result<PathBuf, FileAn
         .map_err(|e| FileAnalysisError::Io(std::io::Error::new(std::io::ErrorKind::Other, e)))??;
 
     Ok(canonical)
+}
+
+/// Read the contents of a validated JavaScript file, returning a UTF-8 string.
+/// This helper internally calls `validate_js_path` first.
+pub async fn read_js_file<P: AsRef<Path>>(path: P) -> Result<String, FileAnalysisError> {
+    let canonical = validate_js_path(path).await?;
+    match fs::read_to_string(&canonical).await {
+        Ok(s) => Ok(s),
+        Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
+            Err(FileAnalysisError::PermissionDenied(canonical))
+        }
+        Err(e) => Err(FileAnalysisError::Io(e)),
+    }
 } 
