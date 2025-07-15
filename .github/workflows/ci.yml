@@ -27,6 +27,8 @@ jobs:
   build:
     name: Build & Package (${{ matrix.os }})
     needs: test
+    permissions:
+      contents: write
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -84,6 +86,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
+          draft: false
+          generate_release_notes: true
           files: |
             dist/${{ env.ARCHIVE_NAME }}
         env:
