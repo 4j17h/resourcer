@@ -1,4 +1,4 @@
-use sourcedumper_core::{parse_sourcemap, sources_list};
+use resourcer_core::{parse_sourcemap, sources_list};
 
 #[test]
 fn parse_basic_sourcemap() {

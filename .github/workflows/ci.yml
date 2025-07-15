@@ -48,16 +48,16 @@ jobs:
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
       - name: Build release (CLI)
-        run: cargo build --release --package sourcedumper_cli --locked --verbose
+        run: cargo build --release --package resourcer_cli --locked --verbose
       - name: Package artifact
         shell: bash
         run: |
-          BIN_PATH=target/release/sourcedumper_cli${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+          BIN_PATH=target/release/resourcer_cli${{ matrix.os == 'windows-latest' && '.exe' || '' }}
           OUT_DIR=dist
           mkdir -p "$OUT_DIR"
           cp "$BIN_PATH" "$OUT_DIR/"
           cd "$OUT_DIR"
-          ARCHIVE_NAME="sourcedumper_cli-${{ matrix.artifact_suffix }}.${{ matrix.archive }}"
+          ARCHIVE_NAME="resourcer_cli-${{ matrix.artifact_suffix }}.${{ matrix.archive }}"
           if [ "${{ matrix.archive }}" = "zip" ]; then
             zip -9 "$ARCHIVE_NAME" *
           else

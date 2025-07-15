@@ -1,4 +1,4 @@
-use sourcedumper_core::storage::{HtmlStorage, MemoryStorage};
+use resourcer_core::storage::{HtmlStorage, MemoryStorage};
 use url::Url;
 
 #[tokio::test]

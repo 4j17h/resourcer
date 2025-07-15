@@ -1,4 +1,4 @@
-use sourcedumper_core::{parse_sourcemap, reconstruct_paths};
+use resourcer_core::{parse_sourcemap, reconstruct_paths};
 use tempfile::tempdir;
 
 #[test]

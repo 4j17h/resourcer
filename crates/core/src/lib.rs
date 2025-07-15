@@ -15,7 +15,7 @@ pub mod sourcemap;
 pub use sourcemap::{extract_sourcemap_urls, validate_sourcemap_urls, find_sourcemap_urls};
 
 pub mod webpack;
-pub use webpack::{infer_chunk_filename_template, ChunkFilenameTemplate, extract_public_path, build_chunk_url, validate_chunk_urls, swc_print_top_level};
+pub use webpack::{infer_chunk_filename_template, ChunkFilenameTemplate, extract_public_path, build_chunk_url, validate_chunk_urls, swc_print_top_level, extract_chunk_ids, generate_chunk_urls, extract_literal_chunk_paths, extract_chunk_maps, generate_urls_from_chunk_maps, extract_paths_from_build_manifest};
 
 pub mod sm_parse;
 pub use sm_parse::{parse_sourcemap, SourcemapError, sources_list};
@@ -28,3 +28,9 @@ pub use download_manager::{download_many, DownloadManagerConfig, DownloadResult}
 
 pub mod output;
 pub use output::{ensure_output_dir, mirror_structure, copy_files, validate_output};
+
+pub mod url_utils;
+pub use url_utils::{find_sourcemap_url_in_js, derive_base_from_runtime, extract_script_urls};
+
+pub mod cli_ops;
+pub use cli_ops::{save_js_and_sources, handle_list_urls, CLIError};

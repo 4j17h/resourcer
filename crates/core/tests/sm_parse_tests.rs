@@ -1,7 +1,7 @@
 use std::fs;
 use tempfile::tempdir;
 use sourcemap::SourceMap;
-use sourcedumper_core::sm_parse::{parse_sourcemap, reconstruct_sources_with_swc};
+use resourcer_core::sm_parse::{parse_sourcemap, reconstruct_sources_with_swc};
 
 #[test]
 fn test_reconstruct_with_sources_content() {

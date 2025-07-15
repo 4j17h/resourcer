@@ -1,4 +1,4 @@
-# Product Requirements Document: SourceDumper
+# Product Requirements Document: ReSourceR
 
 ## 1. Introduction
 
@@ -6,7 +6,7 @@
 Developers, security auditors, and reverse engineers often need to inspect the original source code of a web application for debugging, analysis, or security auditing. However, modern web apps are typically deployed as bundled, minified, and transpiled JavaScript. Manually finding and reconstructing the original code from sourcemaps is a tedious, error-prone, and slow process that requires browser developer tools and significant manual effort. There is no streamlined, high-performance CLI tool that can reliably automate this process from a single URL.
 
 ### 1.2 Vision
-**SourceDumper** will be a best-in-class, performance-oriented CLI tool that automates the discovery and reconstruction of a web application's original source code from its sourcemaps. It will empower users to go from a URL to a complete, locally-saved source tree in seconds, enabling deep analysis, security auditing, and debugging workflows that are currently impractical.
+**ReSourceR** will be a best-in-class, performance-oriented CLI tool that automates the discovery and reconstruction of a web application's original source code from its sourcemaps. It will empower users to go from a URL to a complete, locally-saved source tree in seconds, enabling deep analysis, security auditing, and debugging workflows that are currently impractical.
 
 ## 2. Goals & Objectives
 
@@ -57,4 +57,4 @@ Developers, security auditors, and reverse engineers often need to inspect the o
 
 *   **Decompiling WebAssembly:** This tool will only handle JavaScript and its sourcemaps. It will not decompile `.wasm` files.
 *   **Cracking or Bypassing Authentication:** The tool will only analyze publicly accessible code or code that the user is authenticated to view. It will not include features for bypassing logins.
-*   **General-Purpose Web Scraper:** SourceDumper is not a crawler. It will only analyze the scripts found on the single URL provided. 
+*   **General-Purpose Web Scraper:** ReSourceR is not a crawler. It will only analyze the scripts found on the single URL provided. 

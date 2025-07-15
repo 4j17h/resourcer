@@ -1,4 +1,4 @@
-use sourcedumper_core::file_io::{validate_js_path, FileAnalysisError};
+use resourcer_core::file_io::{validate_js_path, FileAnalysisError};
 use tempfile::NamedTempFile;
 use tokio::fs;
 use std::path::PathBuf;
@@ -34,7 +34,7 @@ async fn read_js_success() {
     let tmp = NamedTempFile::new().unwrap();
     let path = tmp.path().with_extension("js");
     fs::write(&path, b"console.log('ok');").await.unwrap();
-    let content = sourcedumper_core::read_js_file(&path).await.unwrap();
+    let content = resourcer_core::read_js_file(&path).await.unwrap();
     assert!(content.contains("ok"));
 }
 
@@ -46,6 +46,6 @@ async fn read_permission_denied() {
     // remove read perms
     use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o000)).unwrap();
-    let err = sourcedumper_core::read_js_file(&path).await.unwrap_err();
+    let err = resourcer_core::read_js_file(&path).await.unwrap_err();
     assert!(matches!(err, FileAnalysisError::PermissionDenied(_)));
 } 

@@ -1,5 +1,4 @@
-use sourcedumper_core::{local_analysis::analyze_local_js, storage::MemoryStorage};
-use sourcedumper_core::HtmlStorage;
+use resourcer_core::{analyze_local_js, MemoryStorage, HtmlStorage};
 use tempfile::NamedTempFile;
 use tokio::fs;
 
@@ -24,7 +23,7 @@ async fn analyze_and_detect_sourcemaps() {
     let path = tmp.path().with_extension("js");
     tokio::fs::write(&path, b"console.log('x');\n//# sourceMappingURL=map1.js.map").await.unwrap();
 
-    let (_doc, maps) = sourcedumper_core::local_analysis::analyze_local_js_with_sourcemaps(&path, &store).await.unwrap();
+    let (_doc, maps) = resourcer_core::local_analysis::analyze_local_js_with_sourcemaps(&path, &store).await.unwrap();
     assert_eq!(maps.len(), 1);
     assert!(maps[0].as_str().ends_with("map1.js.map"));
 } 

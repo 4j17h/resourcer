@@ -9,7 +9,7 @@
         "testStrategy": "Verify the repository structure and initial commit. Ensure all necessary files and directories are present.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -95,7 +95,7 @@
         "dependencies": [
           1
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -141,7 +141,7 @@
           2,
           3
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -187,7 +187,7 @@
         "dependencies": [
           4
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -243,7 +243,7 @@
         "dependencies": [
           5
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -262,7 +262,7 @@
               1
             ],
             "details": "Resolve relative paths using sourceRoot/sources fields, handle webpack:// prefixes, and reconstruct directory structure",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -272,8 +272,8 @@
             "dependencies": [
               2
             ],
-            "details": "Combine source fragments using mappings offsets, apply names array substitutions, and reassemble complete files",
-            "status": "pending",
+            "details": "Combine source fragments using mappings offsets, apply names array substitutions, and reassemble complete files\n<info added on 2025-07-14T19:21:27.238Z>\n1. Parse the sourcemap file to extract the 'sources' array, the 'sourcesContent' array, the 'mappings' string, and the 'names' array.\n2. If 'sourcesContent' is present, write each entry to the corresponding file path and validate the number of entries.\n3. If 'sourcesContent' is missing, decode the 'mappings' field to determine the original file, line, and column, and reassemble the original file by concatenating mapped segments in order.\n4. Apply substitutions from the 'names' array as needed for identifier mapping.\n5. Handle edge cases such as gaps in mappings, multiple source files, and tool-specific quirks.\n6. Write reconstructed source files to the output directory and optionally generate a report of unmapped segments.\n7. Test the implementation using known-good sourcemaps and originals, and add tests for edge cases.\n</info added on 2025-07-14T19:21:27.238Z>",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -284,7 +284,7 @@
               3
             ],
             "details": "Compare checksums/hashes of reconstructed files with available originals, implement diff analysis for validation",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -299,8 +299,51 @@
         "dependencies": [
           6
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Output Directory",
+            "description": "Ensure the specified output directory exists, creating it if necessary.",
+            "dependencies": [],
+            "details": "Implement logic to check if the directory exists and create it if it does not. Handle any potential errors such as permission issues or invalid paths.\n<info added on 2025-07-14T19:49:07.959Z>\nImplementation plan for Create Output Directory (Rust):\n\n1. Add new module `output.rs` in `crates/core/src/`.\n2. Expose function `ensure_output_dir(output_path: &Path) -> Result<(), IoError>`:\n   • Uses `tokio::fs::create_dir_all` (async) or `std::fs::create_dir_all` (sync) to create directory and parents.\n   • Checks existence first; if already exists, skip creation.\n   • Handles permission errors and returns custom error type.\n3. Update core `lib.rs` to re-export this helper.\n4. Add unit test in `crates/core/tests/output_tests.rs` using `tempdir`:\n   • Provide a non-existent path, call helper, assert directory now exists.\n   • Provide path that already exists; ensure no error.\n5. Extend CLI layer later to accept `--output` flag and pass path to this helper.\n6. Consider future Windows path edge cases.\n</info added on 2025-07-14T19:49:07.959Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Mirror File Structure",
+            "description": "Replicate the original project structure in the output directory.",
+            "dependencies": [
+              1
+            ],
+            "details": "Recursively create subdirectories and files to mirror the original source tree structure. Ensure all paths and filenames are correctly replicated.\n<info added on 2025-07-14T19:51:07.467Z>\nIn `output.rs`, add function `mirror_structure(src_root: &Path, dst_root: &Path) -> io::Result<()>`.\nRecursively walk `src_root` using `walkdir` crate (add as dependency).\nFor each directory found under src_root, create corresponding directory under dst_root (using `fs::create_dir_all`).\nSkip file copying here (handled in 7.3); only create directories.\nHandle permission errors.\nAdd `walkdir = \"2\"` to `Cargo.toml`.\nWrite tests in `output_tests.rs`:\nBuild a temp directory with nested dirs and dummy files.\nCall `mirror_structure` to another temp output dir.\nAssert directory hierarchy exists (but files absent).\nEnsure idempotency: calling function multiple times does not error.\n</info added on 2025-07-14T19:51:07.467Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Write Files to Directory",
+            "description": "Save the reconstructed source files to the specified output directory.",
+            "dependencies": [
+              2
+            ],
+            "details": "Write the content of each file to the corresponding path in the output directory. Ensure the file content matches the original source files.\n<info added on 2025-07-14T19:53:22.065Z>\nIn `output.rs`, add `copy_files(src_root: &Path, dst_root: &Path) -> io::Result<()>`.\nWalk `src_root` via `WalkDir`.\nFor each file, compute relative path and copy to `dst_root` using `fs::copy`.\nEnsure parent directory exists using `create_dir_all`.\nPreserve file metadata where feasible.\nUpdate tests in `output_tests.rs`:\nBuild sample directory with multiple files.\nCall `mirror_structure` then `copy_files`.\nAssert files exist in `dst` and content is identical.\nEnsure idempotency: copying twice should overwrite or skip without error.\n</info added on 2025-07-14T19:53:22.065Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Validate File Structure and Content",
+            "description": "Verify the saved source files match the expected structure and content.",
+            "dependencies": [
+              3
+            ],
+            "details": "Implement validation tests to compare the saved files with the original source files. Ensure the structure and content are identical. Handle any discrepancies and provide feedback.\n<info added on 2025-07-14T19:54:53.664Z>\nImplementation plan for Validate File Structure and Content (Rust):\n\n1. In `output.rs`, add `validate_output(src_root: &Path, dst_root: &Path) -> io::Result<Vec<String>>`.\n   • Walk `src_root` with `WalkDir` collecting files.\n   • For each file, compute relative path, ensure counterpart exists in `dst_root`.\n   • Compare file size and SHA256 hash; collect mismatches in `Vec<String>` of relative paths.\n   • Return Ok(vec) where vec is empty if all matches.\n2. Add dependency `sha2 = \"0.10\"` (for hashing).\n3. Add tests in `output_tests.rs`:\n   • Positive case: identical src/dst, validate returns empty list.\n   • Negative case: modify one dst file, expect non-empty mismatches.\n4. After tests pass, mark subtask done and close Task 7.\n</info added on 2025-07-14T19:54:53.664Z>",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 8,
@@ -312,8 +355,40 @@
         "dependencies": [
           4
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement CLI Flag for Listing URLs",
+            "description": "Add a flag (`--list-urls`) to the CLI interface.",
+            "dependencies": [],
+            "details": "This flag will trigger the listing of discovered JavaScript chunk URLs without downloading them.\n<info added on 2025-07-14T20:00:02.454Z>\nIn crates/cli/main.rs, add clap Arg --list-urls. When flag present, call core function list_discovered_urls(src_root) that gathers URLs. Print URLs one per line or as JSON based on --json flag (optional). Ensure flag is mutually exclusive with download actions. Add tests in cli tests to assert flag prints expected list.\n</info added on 2025-07-14T20:00:02.454Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Collect URLs from Detection Pipeline",
+            "description": "Implement the logic to collect URLs from the detection pipeline.",
+            "dependencies": [
+              1
+            ],
+            "details": "Ensure the collected URLs are discoverable JavaScript chunk URLs.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Deduplicate, Validate, and Format URL List",
+            "description": "Deduplicate, validate, and format the list of collected URLs.",
+            "dependencies": [
+              2
+            ],
+            "details": "Ensure the list is clean and ready for output.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 9,
@@ -416,8 +491,8 @@
             "title": "Concurrent download system",
             "description": "Implement concurrent downloads to maximize network throughput",
             "dependencies": [],
-            "details": "Develop a system using concurrency patterns (e.g., worker pools, goroutines) to parallelize file downloads. Handle connection pooling, error handling across simultaneous requests, and resource allocation.",
-            "status": "pending",
+            "details": "Develop a system using concurrency patterns (e.g., worker pools, goroutines) to parallelize file downloads. Handle connection pooling, error handling across simultaneous requests, and resource allocation.\n<info added on 2025-07-14T19:14:17.196Z>\nImplementation Plan for Concurrent Download System (Rust):\n\n1. **Select Concurrency Model:**\n   - Use Rust's async/await ecosystem (Tokio runtime) for scalable concurrency.\n   - Prefer async tasks and channels over OS threads for network-bound workloads.\n\n2. **Design Worker Pool:**\n   - Create a configurable number of worker tasks (e.g., via `tokio::spawn`).\n   - Use an async channel (e.g., `tokio::sync::mpsc`) to distribute download jobs to workers.\n   - Each worker receives a URL, performs the download, and sends results/errors to a results channel.\n\n3. **Connection Pooling:**\n   - Use a single `reqwest::Client` instance, which internally manages connection pooling.\n   - Pass a reference to the client to each worker.\n\n4. **Error Handling:**\n   - Workers should handle network errors, timeouts, and HTTP errors gracefully.\n   - Collect errors in a results channel for aggregation and reporting.\n\n5. **Resource Limiting:**\n   - Limit the number of concurrent downloads (worker count) to avoid overwhelming the system or remote server.\n   - Optionally, add rate limiting (e.g., with `tokio::time::sleep` or a rate limiter crate).\n\n6. **Result Aggregation:**\n   - Main task collects results from the results channel.\n   - Store successful downloads and log/report errors.\n\n7. **Testing:**\n   - Unit test worker logic with mock URLs and simulated network conditions.\n   - Integration test the full pipeline with a set of URLs.\n\n8. **Extensibility:**\n   - Design the system so that new download strategies (e.g., retries, backoff) can be plugged in easily.\n\n**Next Steps:**\n- Scaffold the worker pool and channel structure in the core module.\n- Implement a prototype with a fixed set of URLs and verify concurrent downloads.\n- Add error handling, result aggregation, and configuration options.\n- Write tests for both success and failure scenarios.\n\nThis plan follows Rust async best practices and is extensible for future enhancements.\n</info added on 2025-07-14T19:14:17.196Z>",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -425,8 +500,8 @@
             "title": "Algorithm optimization",
             "description": "Optimize parsing and reconstruction algorithms for speed",
             "dependencies": [],
-            "details": "Profile existing algorithms to identify bottlenecks. Implement optimizations such as memory pooling, stream processing, and efficient data structures. Validate output integrity after optimizations.",
-            "status": "pending",
+            "details": "Profile existing algorithms to identify bottlenecks. Implement optimizations such as memory pooling, stream processing, and efficient data structures. Validate output integrity after optimizations.\n<info added on 2025-07-14T19:28:47.840Z>\nAlgorithm Optimization Plan:\n\n1. Profile the current parsing and reconstruction algorithms (including new SWC-based logic) to identify bottlenecks using tools like cargo-flamegraph or built-in timing.\n2. Optimize hot paths:\n   - Use SWC for AST parsing instead of regex for chunk map extraction and runtime analysis.\n   - Replace any unnecessary allocations or string copies with references or Cow where possible.\n   - Use streaming and iterators for large file processing to minimize memory usage.\n   - Parallelize independent operations (e.g., chunk analysis, file writes) using Tokio tasks or rayon where appropriate.\n3. Benchmark before and after changes to quantify improvements (throughput, latency, memory usage).\n4. Validate output integrity after optimizations with regression tests.\n5. Document key optimizations and their impact for future maintainers.\n\nThis plan will ensure the core extraction and reconstruction process is as fast and efficient as possible, leveraging the new SWC integration.\n</info added on 2025-07-14T19:28:47.840Z>",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -453,8 +528,49 @@
         "dependencies": [
           13
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Compile for macOS",
+            "description": "Compile the CLI tool for macOS.",
+            "dependencies": [],
+            "details": "Ensure the binary is distributable and avoids complex installation steps.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Compile for Windows",
+            "description": "Compile the CLI tool for Windows.",
+            "dependencies": [],
+            "details": "Ensure the binary is distributable and avoids complex installation steps.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Compile for Linux",
+            "description": "Compile the CLI tool for Linux.",
+            "dependencies": [],
+            "details": "Ensure the binary is distributable and avoids complex installation steps.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Test Binaries on Each Platform",
+            "description": "Test the compiled binaries on macOS, Windows, and Linux.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Verify the tool works correctly on each platform and the installation process is straightforward.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 15,
@@ -525,8 +641,53 @@
         "dependencies": [
           16
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Command Structure",
+            "description": "Create a clear and intuitive command structure for the CLI interface.",
+            "dependencies": [],
+            "details": "Define the commands and their respective options. Ensure the structure is logical and easy to understand.\n<info added on 2025-07-14T20:21:12.314Z>\nDesigning command structure:\n• Adopt clap subcommand model for clarity.\n• Primary subcommands:\n  1. list-urls   – Scan JS file/URL and output discovered sourcemap URLs.\n     Flags: --input <FILE>, --json\n  2. dump        – Full pipeline: fetch (or read), detect, download, reconstruct, output tree.\n     Flags: --url <URL>|--input <FILE>, --out <DIR>, --max-files, --max-bytes, --dry-run\n  3. browser     – SPA mode (headless; future task 9). Placeholder for now.\n  4. version     – Print version (handled by clap automatically but alias).\n• Global flags handled by clap (e.g., -v/--verbose later).\n\nImplementation approach:\n1. Modify crates/cli/src/main.rs to use top-level Cli with subcommands enum.\n2. Keep existing list-urls behaviour inside ListUrls subcommand.\n3. Other subcommands stub to println!(\"not implemented\") for now.\n4. Update Cargo dependencies remain the same.\n5. Ensure `cargo run -- list-urls --input foo.js` still works.\n\nNext: implement skeleton code + compile.\n</info added on 2025-07-14T20:21:12.314Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Help System",
+            "description": "Develop a comprehensive help system for the CLI interface.",
+            "dependencies": [
+              1
+            ],
+            "details": "Provide detailed help messages for each command and option. Include usage examples and error messages.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Input Validation",
+            "description": "Implement input validation for the CLI interface.",
+            "dependencies": [
+              1
+            ],
+            "details": "Validate user inputs to ensure they are within acceptable ranges and formats. Provide clear error messages for invalid inputs.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "User Interaction Design",
+            "description": "Design the user interaction flow considering multiple edge cases.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Ensure the CLI interface handles various edge cases gracefully. Provide clear feedback and guidance to the user.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 18,
@@ -551,8 +712,51 @@
         "dependencies": [
           18
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Test Plan",
+            "description": "Develop a comprehensive test plan for user acceptance testing.",
+            "dependencies": [],
+            "details": "Include test cases, test data, and expected results. Coordinate with stakeholders to ensure all aspects are covered.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Collect Feedback",
+            "description": "Gather feedback from security auditors, developers, and reverse engineers.",
+            "dependencies": [
+              1
+            ],
+            "details": "Conduct testing sessions and document the feedback received. Ensure all feedback is recorded accurately.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Analyze Feedback",
+            "description": "Analyze the collected feedback to identify areas for improvement.",
+            "dependencies": [
+              2
+            ],
+            "details": "Prioritize the feedback based on its impact on the tool's usability, performance, and accuracy.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Improvements",
+            "description": "Make necessary adjustments based on the feedback analysis.",
+            "dependencies": [
+              3
+            ],
+            "details": "Iterate on the tool's design and functionality to address the identified issues and enhance user satisfaction.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 20,
@@ -570,7 +774,7 @@
     ],
     "metadata": {
       "created": "2025-07-14T16:56:51.001Z",
-      "updated": "2025-07-14T18:30:36.740Z",
+      "updated": "2025-07-14T20:28:06.654Z",
       "description": "Tasks for master context"
     }
   }

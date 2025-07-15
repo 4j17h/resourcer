@@ -1,9 +1,6 @@
 use std::fs;
 use tempfile::tempdir;
-use sourcedumper_core::ensure_output_dir;
-use sourcedumper_core::mirror_structure;
-use sourcedumper_core::copy_files;
-use sourcedumper_core::validate_output;
+use resourcer_core::{ensure_output_dir, mirror_structure, copy_files, validate_output};
 use walkdir::WalkDir;
 
 #[test]

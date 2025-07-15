@@ -1,4 +1,4 @@
-use sourcedumper_core::extract_sourcemap_urls;
+use resourcer_core::extract_sourcemap_urls;
 use url::Url;
 
 #[test]
@@ -29,7 +29,7 @@ fn multiple_and_none() {
 fn validate_and_dedup() {
     let base = Url::parse("https://example.com/js/app.js").unwrap();
     let raw = vec!["app.js.map".to_string(), "https://cdn.com/vendor.map".to_string(), "app.js.map".to_string()];
-    let urls = sourcedumper_core::validate_sourcemap_urls(&base, raw);
+    let urls = resourcer_core::validate_sourcemap_urls(&base, raw);
     assert_eq!(urls.len(), 2);
     assert!(urls.iter().any(|u| u.as_str() == "https://example.com/js/app.js.map"));
     assert!(urls.iter().any(|u| u.as_str() == "https://cdn.com/vendor.map"));

@@ -1,4 +1,4 @@
-use sourcedumper_core::{infer_chunk_filename_template, ChunkFilenameTemplate, extract_public_path, build_chunk_url, validate_chunk_urls};
+use resourcer_core::{infer_chunk_filename_template, ChunkFilenameTemplate, extract_public_path, build_chunk_url, validate_chunk_urls};
 use url::Url;
 use httpmock::MockServer;
 use httpmock::Method::HEAD;
@@ -76,5 +76,5 @@ fn swc_parse_runtime_prints_ast() {
     };
     var foo = 42;
     "#;
-    sourcedumper_core::swc_print_top_level(js);
+    resourcer_core::swc_print_top_level(js);
 } 
