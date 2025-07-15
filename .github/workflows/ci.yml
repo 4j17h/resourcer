@@ -64,7 +64,6 @@ jobs:
             tar -czf "$ARCHIVE_NAME" *
           fi
           echo "ARCHIVE_NAME=$ARCHIVE_NAME" >> $GITHUB_ENV
-          echo "BIN_PATH=$BIN_PATH" >> $GITHUB_ENV
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -77,6 +76,5 @@ jobs:
         with:
           files: |
             dist/${{ env.ARCHIVE_NAME }}
-            ${{ env.BIN_PATH }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
