@@ -51,31 +51,32 @@ jobs:
         uses: Swatinem/rust-cache@v2
       - name: Build release (CLI)
         run: cargo build --release --package resourcer_cli --locked --verbose
-      - name: Package artifact
-        shell: ${{ matrix.os == 'windows-latest' && 'powershell' || 'bash' }}
+      - name: Package artifact (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
         run: |
-          if ('${{ matrix.os }}' -eq 'windows-latest') {
-            $BIN_PATH = "target/release/resourcer_cli.exe"
-            $OUT_DIR = "dist"
-            New-Item -ItemType Directory -Force -Path $OUT_DIR
-            Copy-Item $BIN_PATH -Destination $OUT_DIR
-            $ARCHIVE_NAME = "resourcer_cli-${{ matrix.artifact_suffix }}.zip"
-            Compress-Archive -Path "$OUT_DIR/*" -DestinationPath "$OUT_DIR/$ARCHIVE_NAME"
-            echo "ARCHIVE_NAME=$ARCHIVE_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          } else {
-            BIN_PATH=target/release/resourcer_cli
-            OUT_DIR=dist
-            mkdir -p "$OUT_DIR"
-            cp "$BIN_PATH" "$OUT_DIR/"
-            cd "$OUT_DIR"
-            ARCHIVE_NAME="resourcer_cli-${{ matrix.artifact_suffix }}.${{ matrix.archive }}"
-            if [ "${{ matrix.archive }}" = "zip" ]; then
-              zip -9 "$ARCHIVE_NAME" *
-            else
-              tar -czf "$ARCHIVE_NAME" *
-            fi
-            echo "ARCHIVE_NAME=$ARCHIVE_NAME" >> $GITHUB_ENV
-          }
+          $BIN_PATH = "target/release/resourcer_cli.exe"
+          $OUT_DIR = "dist"
+          New-Item -ItemType Directory -Force -Path $OUT_DIR
+          Copy-Item $BIN_PATH -Destination $OUT_DIR
+          $ARCHIVE_NAME = "resourcer_cli-${{ matrix.artifact_suffix }}.zip"
+          Compress-Archive -Path "$OUT_DIR/resourcer_cli.exe" -DestinationPath "$OUT_DIR/$ARCHIVE_NAME"
+          echo "ARCHIVE_NAME=$ARCHIVE_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Package artifact (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          BIN_PATH=target/release/resourcer_cli
+          OUT_DIR=dist
+          mkdir -p "$OUT_DIR"
+          cp "$BIN_PATH" "$OUT_DIR/"
+          cd "$OUT_DIR"
+          ARCHIVE_NAME="resourcer_cli-${{ matrix.artifact_suffix }}.${{ matrix.archive }}"
+          if [ "${{ matrix.archive }}" = "zip" ]; then
+            zip -9 "$ARCHIVE_NAME" resourcer_cli
+          else
+            tar -czf "$ARCHIVE_NAME" resourcer_cli
+          fi
+          echo "ARCHIVE_NAME=$ARCHIVE_NAME" >> $GITHUB_ENV
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
