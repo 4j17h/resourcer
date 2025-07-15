@@ -43,9 +43,19 @@ async fn read_permission_denied() {
     let tmp = NamedTempFile::new().unwrap();
     let path = tmp.path().with_extension("js");
     fs::write(&path, b"alert('x');").await.unwrap();
-    // remove read perms
-    use std::os::unix::fs::PermissionsExt;
-    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o000)).unwrap();
-    let err = resourcer_core::read_js_file(&path).await.unwrap_err();
-    assert!(matches!(err, FileAnalysisError::PermissionDenied(_)));
+    
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o000)).unwrap();
+        let err = resourcer_core::read_js_file(&path).await.unwrap_err();
+        assert!(matches!(err, FileAnalysisError::PermissionDenied(_)));
+    }
+    
+    #[cfg(windows)]
+    {
+        // Windows does not support Unix-style permissions; skip this test.
+        // Optionally, you could use a more complex Windows ACL approach if needed.
+        eprintln!("Skipping read_permission_denied test on Windows");
+    }
 } 
