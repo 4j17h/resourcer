@@ -140,7 +140,7 @@ Steps:
 
 ```bash
 # clone and build
-git clone https://github.com/your-org/resourcer.git
+git clone https://github.com/4j17h/resourcer.git
 cd resourcer
 cargo build --release     # builds all workspace crates
 ```
