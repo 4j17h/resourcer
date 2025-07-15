@@ -13,7 +13,7 @@ fn test_reconstruct_with_sources_content() {
         "sources":["{}"],
         "sourcesContent":["console.log('hi');\n"],
         "mappings":";"
-    }}"#, file_path.display());
+    }}"#, file_path.display().to_string().replace('\\', "\\\\"));
     let sm = parse_sourcemap(&sm_json).unwrap();
     reconstruct_sources_with_swc(&sm, "").unwrap();
     let content = fs::read_to_string(&file_path).unwrap();
@@ -31,7 +31,7 @@ fn test_reconstruct_with_mapping_stub() {
         "mappings":"AAAA;",
         "names":[],
         "sourcesContent":null
-    }}"#, file_path.display());
+    }}"#, file_path.display().to_string().replace('\\', "\\\\"));
     let sm = parse_sourcemap(&sm_json).unwrap();
     // Minimal generated JS
     let generated_js = "var x = 1;\n";
